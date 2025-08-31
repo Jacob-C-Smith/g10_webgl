@@ -1,0 +1,16 @@
+{
+    "name" : "triangle",
+    "vert" : 
+    [
+         0.0,  1.0, 0.0,
+        -1.0, -1.0, 0.0,
+         1.0, -1.0, 0.0
+    ],
+    "attr" : 
+    [
+        {
+            "name" : "aVertexPosition",
+            "type" : "vec3"
+        }
+    ]
+}

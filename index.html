@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+
+<!-- document -->
+<html lang="en">
+
+    <!-- declare the "head" of the HTML document -->
+    <head>
+
+        <!-- character encoding-->
+        <meta charset="utf-8"/>
+        
+        <!-- document title -->
+        <title>P1</title>
+
+        <!-- load matrix manipulation helper methods -->	
+        <script type="text/javascript" src="glMatrix_util.js"></script>
+
+        <!-- load other helper methods -->
+        <script type="text/javascript" src="common.js"></script>
+        <script type="text/javascript" src="uniform.js"></script>
+        <script type="text/javascript" src="shader.js"></script>
+        <script type="text/javascript" src="transform.js"></script>
+        <script type="text/javascript" src="geometry.js"></script>
+        <script type="text/javascript" src="drawable.js"></script>
+
+        <!-- load WebGL code -->
+        <script type="text/javascript" src="main.js"></script>
+    </head>
+
+    <!-- declare the "body" of the HTML document -->
+    <body onload="startHelloWebGL()">
+
+        <!-- embed the HTML5 Canvas Drawing object on the page. -->
+        <canvas id="hellowebgl">
+            If you're seeing this your web browser doesn't support the &lt;canvas>&gt; element. Ouch!
+        </canvas>
+    </body>
+</html>

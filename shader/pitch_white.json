@@ -1,0 +1,21 @@
+{
+    "name" : "pitch white",
+    "source" : 
+    {
+        "vert" : "shader/pitch_white/vert",
+        "frag" : "shader/pitch_white/frag"
+    },
+    "attributes" :
+    {
+        "aVertexPosition" : 
+        {
+            "type" : "vec4",
+            "index" : 0
+        }
+    },
+    "uniforms" : 
+    {
+        "uPMatrix" : "mat4",
+        "uMVMatrix" : "mat4"
+    }
+}
