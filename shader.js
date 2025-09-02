@@ -13,8 +13,8 @@ class Shader {
         let shader = new Shader();
 
         // store the sources
-        shader.vertSource = await fetchText(value["vert"]);
-        shader.fragSource = await fetchText(value["frag"]);
+        shader.vertSource = await fetchText(value.vert);
+        shader.fragSource = await fetchText(value.frag);
 
         // compile the shader source
         {
@@ -62,8 +62,6 @@ class Shader {
 
     use()
     {
-
-        // NOTE: result -> undefined
         gl.useProgram(this.prog);
     }
 

@@ -1,13 +1,14 @@
 class Geometry {
-    
-    constructor() {
+
+    constructor () {
         this.name = "";
         this.vert = [];
         this.vertexBuffer = null;
         this.modelMatrix = mat4.create();
     }
 
-    static async load(uri) {
+    // load the geometry from a JSON file
+    static async load (uri) {
 
         // initialized data
         let geometry = new Geometry();
@@ -17,7 +18,7 @@ class Geometry {
         // construct the vertex buffer
         {
             gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data["vert"]), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vert), gl.STATIC_DRAW);
             vertexBuffer.itemSize = 3;
             vertexBuffer.numItems = 3;
         }
@@ -26,24 +27,43 @@ class Geometry {
         {
             
             // store the name in the result
-            geometry.name = data["name"]
+            geometry.name = data.name;
 
             // store the vertex buffer in the result
             geometry.vertexBuffer = vertexBuffer;
 
             // store the vertices in the result
-            geometry.vert = data["vert"]
+            geometry.vert = data.vert
         }
 
         // done
         return geometry;
     }
 
-    draw(){
+    // bind the geometry
+    bind (pipeline)
+    {
+
+        // bind the vertex buffer
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+
+        // bind each vertex attribute
+        for (const [k, v] of Object.entries(pipeline.vertexAttributes)) {
+            gl.vertexAttribPointer(v, this.vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        }
+    }
+
+    // draw the geometry
+    draw ( )
+    {
+
+        // draw the geometry
         gl.drawArrays(gl.TRIANGLES, 0, this.vertexBuffer.numItems);
     }
 
-    str() {
+    // create a textual representation of the 
+    str ( )
+    {
         return `
         {
             name         : ${this.name},

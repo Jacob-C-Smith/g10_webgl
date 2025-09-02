@@ -1,0 +1,20 @@
+{
+    "name" : "color",
+    "source" : 
+    {
+        "vert" : "shader/color/vert",
+        "frag" : "shader/color/frag"
+    },
+    "attributes" :
+    {
+        "aVertexPosition" : 
+        {
+            "type" : "vec4",
+            "index" : 0
+        }
+    },
+    "uniforms" : 
+    {
+        "color" : "vec3"
+    }
+}

@@ -1,10 +1,12 @@
 class Drawable extends Geometry {
 
-    constructor() {
+    constructor()
+    {
         super();
     }
 
-    static async load(uri, ...uniformBinds) {
+    static async load (uri, ...uniformBinds)
+    {
 
         // initialized data
         let drawable = new Drawable();
@@ -22,11 +24,12 @@ class Drawable extends Geometry {
         return drawable;
     }
 
-    draw(){
-        return super.draw()
+    draw ( )
+    {
+        return super.draw();
     }
 
-    str() {
-        return super.str()
+    str ( ) {
+        return super.str();
     }
 }
