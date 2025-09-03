@@ -1,9 +1,9 @@
 {
-    "name" : "pitch white",
+    "name" : "pitch blue",
     "source" : 
     {
-        "vert" : "shader/pitch_white/vert",
-        "frag" : "shader/pitch_white/frag"
+        "vert" : "shader/pitch_blue/vert",
+        "frag" : "shader/pitch_blue/frag"
     },
     "attributes" :
     {

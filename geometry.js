@@ -1,14 +1,16 @@
-class Geometry {
+class Geometry extends Drawable {
 
-    constructor () {
+    constructor ()
+    {
+        super();
         this.name = "";
         this.vert = [];
         this.vertexBuffer = null;
-        this.modelMatrix = mat4.create();
     }
 
     // load the geometry from a JSON file
-    static async load (uri) {
+    static async load (uri)
+    {
 
         // initialized data
         let geometry = new Geometry();

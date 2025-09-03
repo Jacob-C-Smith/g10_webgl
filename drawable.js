@@ -1,8 +1,7 @@
-class Drawable extends Geometry {
+class Drawable {
 
-    constructor()
+    constructor ( )
     {
-        super();
     }
 
     static async load (uri, ...uniformBinds)

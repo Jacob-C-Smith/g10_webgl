@@ -1,10 +1,13 @@
 let triangle1Geometry;
 let triangle2Geometry;
+let triangle3Geometry;
 
 let pitchWhitePipeline;
 let colorPipeline;
 
 let pass = [ ];
+
+let transform;
 
 gl = null;
 
@@ -59,49 +62,43 @@ function compileShader(gl, source, type) {
     return shader;
 }
 
-async function loadShadersAsync() {
+async function loadShadersAsync ( )
+{
 
     // load the pipeline
     pitchWhitePipeline = await Pipeline.load(
         "shader/pitch_white.json",
-        (x) => {
-            console.log(`once ${x}`)
+        (pipeline) => {
+            console.log(`[pipeline] [bind] ${pipeline.name}`)
         },
-        (y) => {
-            console.log(`each ${y}`)
+        (pipeline, drawable) => {
+            console.log(`[drawable] [bind] ${drawable.name}`)
         }
     )
     
     colorPipeline = await Pipeline.load(
         "shader/color.json",
-        (x) => {
-            console.log(`once ${x}`)
+        (pipeline) => {
+            console.log(`[pipeline] [bind] ${pipeline.name}`)
         },
-        (y) => {
-            console.log(`each ${y}`)
+        (pipeline, drawable) => {
+            console.log(`[drawable] [bind] ${drawable.name}`)
+            gl.uniform3f(pipeline.uniforms.color, 0.5, 0.5, 1.0);
+            gl.uniformMatrix4fv(pipeline.uniforms.M, false, transform.modelMatrix);
         }
     )
-
-    // shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, 'uPMatrix');
-    // shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, 'uMVMatrix');
 
     // done
     return;
 }
 
-async function loadGeometriesAsync() {
+async function loadGeometriesAsync ( )
+{
 
-    // load the triangle
-    triangle1Geometry = await Drawable.load(
-        "geometry/tri1.json", 
-        (loadedGeometry) => {triangle1Geometry = loadedGeometry;}
-    )
-
-    // load the triangle
-    triangle2Geometry = await Drawable.load(
-        "geometry/tri2.json", 
-        (loadedGeometry) => {triangle2Geometry = loadedGeometry;}
-    )
+    // load geometries
+    triangle1Geometry = await Geometry.load("geometry/tri1.json")
+    triangle2Geometry = await Geometry.load("geometry/tri2.json")
+    triangle3Geometry = await Geometry.load("geometry/tri3.json")
 
     // done
     return;
@@ -110,7 +107,8 @@ async function loadGeometriesAsync() {
 /** 
  * Entry point
  */
-async function main() {
+async function main()
+{
 
     // initialize
     init(); 
@@ -130,18 +128,25 @@ async function main() {
 
         // add the triangle to the draw list
         pitchWhitePipeline.add(triangle1Geometry);
-        colorPipeline.add(triangle2Geometry);
+        pitchWhitePipeline.add(triangle2Geometry);
+        colorPipeline.add(triangle3Geometry);
 
         // add the pipelines to the render pass
         pass.push(pitchWhitePipeline);
         pass.push(colorPipeline);
     }
 
+    transform = await Transform.fromJson({
+        location: [0, 0, 0],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1]
+    });
+
     // draw the scene
     drawScene();
 }
 
-function drawScene()
+function drawScene ( )
 {
 
     // clear the viewport

@@ -1,6 +1,7 @@
 class Pipeline {
 
-    constructor() {
+    constructor()
+    {
         this.name = "";
         this.shader = null;
         this.vertexAttributes = null;
@@ -9,8 +10,9 @@ class Pipeline {
         this.bindOnceFunc = null;
         this.bindEachFunc = null;
     }
-    
-    static async fromJson(value, bindOnce, bindEach){
+
+    static async fromJson(value, bindOnce, bindEach)
+    {
 
         // initialized data
         let pipeline = new Pipeline();
@@ -54,9 +56,6 @@ class Pipeline {
         // construct uniforms
         {
 
-            // initialized data
-            let prog = pipeline.shader.prog;
-
             // construct a dictionary of vertex attributes
             pipeline.uniforms = {};
 
@@ -65,10 +64,7 @@ class Pipeline {
             {
                 
                 // store the uniform location
-                pipeline.uniforms[k] = {
-                    location: gl.getUniformLocation(prog, k),
-                    type: v.type
-                };
+                pipeline.uniforms[k] = gl.getUniformLocation(pipeline.shader.prog, k);
             }
         }
         
@@ -83,7 +79,8 @@ class Pipeline {
         return pipeline;
     }
 
-    static async load(uri, bindOnce, bindEach) {
+    static async load(uri, bindOnce, bindEach)
+    {
 
         // success
         return await Pipeline.fromJson(
@@ -93,19 +90,20 @@ class Pipeline {
         );
     }
 
-    add(d) {
+    add(d)
+    {
         this.drawList.push(d);
     }
 
-    bindOnce(){
-        console.log(`Pipeline.bindOnce(): ${this.name}`)
+    bindOnce()
+    {
         this.shader.use()
-        this.bindOnceFunc()
+        this.bindOnceFunc(this)
     }
 
-    bindEach(g){
-        console.log(`Pipeline.bindEach(): ${this.name}`)
-        this.bindEachFunc()
+    bindEach(g)
+    {
+        this.bindEachFunc(this, g)
         g.bind(this)
     }
 

@@ -9,12 +9,13 @@
     {
         "aVertexPosition" : 
         {
-            "type" : "vec4",
+            "type" : "vec3",
             "index" : 0
         }
     },
     "uniforms" : 
     {
-        "color" : "vec3"
+        "color" : "vec3",
+        "M" : "mat4"
     }
 }
