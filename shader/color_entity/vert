@@ -1,6 +1,10 @@
 // define our Vertex Shader - this controls the position of our vertices.
 attribute vec3 aVertexPosition;
 
+uniform mat4 M;
+uniform mat4 V;
+uniform mat4 P;
+
 void main(void) {
-    gl_Position = vec4(aVertexPosition, 1.0);
+    gl_Position = P * V * M * vec4(aVertexPosition, 1.0);
 }

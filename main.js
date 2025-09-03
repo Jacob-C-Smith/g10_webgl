@@ -1,13 +1,19 @@
-let triangle1Geometry;
-let triangle2Geometry;
-let triangle3Geometry;
+let geometryPaths =
+[
+    "geometry/tri1.json",
+    "geometry/tri2.json",
+    "geometry/tri3.json"
+]
 
-let pitchWhitePipeline;
-let colorPipeline;
+let colorEntityPipeline;
+let depthEntityPipeline;
+let transformDebugPipeline;
 
 let pass = [ ];
+let geometries = { };
 
-let transform;
+let eye = [ -2, 0, 0 ];
+let degre = 0;
 
 gl = null;
 
@@ -44,10 +50,13 @@ function init () {
 
     // clear the color attachment with black
     gl.framebufferClearColor = [ 0.0, 0.0, 0.0, 1.0 ];
+    gl.clearColor(...gl.framebufferClearColor);
 
     // viewport
-    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    
     // done
 }
 
@@ -65,26 +74,61 @@ function compileShader(gl, source, type) {
 async function loadShadersAsync ( )
 {
 
-    // load the pipeline
-    pitchWhitePipeline = await Pipeline.load(
-        "shader/pitch_white.json",
+    colorEntityPipeline = await Pipeline.load(
+        "shader/color_entity.json",
         (pipeline) => {
-            console.log(`[pipeline] [bind] ${pipeline.name}`)
+            console.log(`[pipeline] [bind] ${pipeline.name}`);
+
+            // enable the vertex buffer
+            gl.enableVertexAttribArray(0);    
+            {
+                let p = mat4.create();
+                let v = mat4.create();
+
+                mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
+                mat4.lookAt(eye, [0,0,0], [0,0,1], v)
+                
+                eye[2] = Math.sin(degre);
+                degre += 0.02;
+
+                gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
+                gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+            }
         },
         (pipeline, drawable) => {
-            console.log(`[drawable] [bind] ${drawable.name}`)
+            console.log(`[drawable] [bind] ${drawable.name}`);
+            
+            drawable.transform.rotation[0] += 0.01;
         }
     )
-    
-    colorPipeline = await Pipeline.load(
-        "shader/color.json",
+
+    depthEntityPipeline = await Pipeline.load(
+        "shader/depth_entity.json",
         (pipeline) => {
-            console.log(`[pipeline] [bind] ${pipeline.name}`)
+            console.log(`[pipeline] [bind] ${pipeline.name}`);
+
+            // enable the vertex buffer
+            gl.enableVertexAttribArray(0);    
+
         },
         (pipeline, drawable) => {
-            console.log(`[drawable] [bind] ${drawable.name}`)
-            gl.uniform3f(pipeline.uniforms.color, 0.5, 0.5, 1.0);
-            gl.uniformMatrix4fv(pipeline.uniforms.M, false, transform.modelMatrix);
+            console.log(`[drawable] [bind] ${drawable.name}`);
+        }
+    )
+
+    transformDebugPipeline = await Pipeline.load(
+        "shader/transform_debug.json",
+        (pipeline) => {
+            console.log(`[pipeline] [bind] ${pipeline.name}`);
+
+            // disable the vertex buffer
+            gl.disableVertexAttribArray(0);    
+            
+            // set a constant 0
+            gl.vertexAttrib3f(0, 0.0, 0.0, 0.0);
+        },
+        (pipeline, drawable) => {
+            console.log(`[drawable] [bind] transform`);
         }
     )
 
@@ -95,10 +139,22 @@ async function loadShadersAsync ( )
 async function loadGeometriesAsync ( )
 {
 
+    // initialized data
+    let promises = []
+    let results = null;
+
     // load geometries
-    triangle1Geometry = await Geometry.load("geometry/tri1.json")
-    triangle2Geometry = await Geometry.load("geometry/tri2.json")
-    triangle3Geometry = await Geometry.load("geometry/tri3.json")
+    for (const path of geometryPaths) 
+        promises.push(
+            Geometry.load(path)
+        );
+
+    // wait for all geometries to load
+    results = await Promise.all(promises);
+
+    // Add the loaded geometries to the list
+    for (const g of results) 
+        geometries[g.name] = g;
 
     // done
     return;
@@ -115,7 +171,7 @@ async function main()
 
     // load
     {
-        
+
         // load pipelines
         await loadShadersAsync();
 
@@ -126,32 +182,31 @@ async function main()
     // setup
     {
 
+        // load an entity
+        e1 = await Entity.load("entity/t1.json");
+        e2 = await Entity.load("entity/t2.json");
+
         // add the triangle to the draw list
-        pitchWhitePipeline.add(triangle1Geometry);
-        pitchWhitePipeline.add(triangle2Geometry);
-        colorPipeline.add(triangle3Geometry);
+        colorEntityPipeline.add(e1);
+        colorEntityPipeline.add(e2);
+        // transformDebugPipeline.add(e1.transform);
+        // transformDebugPipeline.add(e2.transform);
 
         // add the pipelines to the render pass
-        pass.push(pitchWhitePipeline);
-        pass.push(colorPipeline);
+        pass.push(colorEntityPipeline);
+        pass.push(colorEntityPipeline);
+        pass.push(transformDebugPipeline);
     }
 
-    transform = await Transform.fromJson({
-        location: [0, 0, 0],
-        rotation: [0, 0, 0],
-        scale: [1, 1, 1]
-    });
-
     // draw the scene
-    drawScene();
+    requestAnimationFrame(drawScene);
 }
 
-function drawScene ( )
+function drawScene ( t )
 {
 
     // clear the viewport
-    gl.clearColor(...gl.framebufferClearColor);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
     // iterate through each pipeline in the render pass
     for (let p of pass)
@@ -171,4 +226,6 @@ function drawScene ( )
             g.draw();
         }
     }
+
+    requestAnimationFrame(drawScene);
 }

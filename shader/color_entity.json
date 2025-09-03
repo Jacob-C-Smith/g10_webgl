@@ -1,0 +1,23 @@
+{
+    "name" : "color entity",
+    "source" : 
+    {
+        "vert" : "shader/color_entity/vert",
+        "frag" : "shader/color_entity/frag"
+    },
+    "attributes" :
+    {
+        "aVertexPosition" : 
+        {
+            "type" : "vec3",
+            "index" : 0
+        }
+    },
+    "uniforms" : 
+    {
+        "color" : "vec3",
+        "M" : "mat4",
+        "V" : "mat4",
+        "P" : "mat4"
+    }
+}

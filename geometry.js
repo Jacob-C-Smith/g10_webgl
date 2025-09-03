@@ -8,19 +8,18 @@ class Geometry extends Drawable {
         this.vertexBuffer = null;
     }
 
-    // load the geometry from a JSON file
-    static async load (uri)
+    // load the geometry from a JSON value
+    static async fromJson(value)
     {
-
+        
         // initialized data
         let geometry = new Geometry();
-        let data = await fetchJson(uri);
         let vertexBuffer = gl.createBuffer();
 
         // construct the vertex buffer
         {
             gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vert), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(value.vert), gl.STATIC_DRAW);
             vertexBuffer.itemSize = 3;
             vertexBuffer.numItems = 3;
         }
@@ -29,17 +28,27 @@ class Geometry extends Drawable {
         {
             
             // store the name in the result
-            geometry.name = data.name;
+            geometry.name = value.name;
 
             // store the vertex buffer in the result
             geometry.vertexBuffer = vertexBuffer;
 
             // store the vertices in the result
-            geometry.vert = data.vert
+            geometry.vert = value.vert
         }
 
         // done
         return geometry;
+    }
+
+    // load the geometry from a JSON file
+    static async load (uri)
+    {
+
+        // success
+        return await Geometry.fromJson(
+            await fetchJson(uri)
+        );
     }
 
     // bind the geometry

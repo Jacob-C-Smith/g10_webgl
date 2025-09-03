@@ -1,0 +1,20 @@
+{
+    "name" : "depth entity",
+    "source" : 
+    {
+        "vert" : "shader/depth_entity/vert",
+        "frag" : "shader/depth_entity/frag"
+    },
+    "attributes" :
+    {
+        "aVertexPosition" : 
+        {
+            "type" : "vec3",
+            "index" : 0
+        }
+    },
+    "uniforms" : 
+    {
+        "M" : "mat4"
+    }
+}

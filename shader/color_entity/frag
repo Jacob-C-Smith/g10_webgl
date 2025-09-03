@@ -1,4 +1,3 @@
-// define our fragment shader - this controls the colors of pixels.
 precision mediump float;
 
 uniform vec3 color;

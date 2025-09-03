@@ -1,20 +1,26 @@
 class Shader {
 
-    constructor() {
+    constructor()
+    {
         this.name = "",
         this.vertSource = null,
         this.fragSource = null,
         this.prog = null;
     }
 
-    static async fromJson(value){
+    static async fromJson(value)
+    {
 
         // initialized data
         let shader = new Shader();
 
         // store the sources
-        shader.vertSource = await fetchText(value.vert);
-        shader.fragSource = await fetchText(value.frag);
+        shader.vertSource = fetchText(value.vert);
+        shader.fragSource = fetchText(value.frag);
+
+        // wait for the sources to load
+        shader.vertSource = await shader.vertSource;
+        shader.fragSource = await shader.fragSource;
 
         // compile the shader source
         {

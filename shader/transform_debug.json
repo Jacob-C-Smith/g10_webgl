@@ -1,9 +1,9 @@
 {
-    "name" : "color",
+    "name" : "transform debug",
     "source" : 
     {
-        "vert" : "shader/color/vert",
-        "frag" : "shader/color/frag"
+        "vert" : "shader/transform_debug/vert",
+        "frag" : "shader/transform_debug/frag"
     },
     "attributes" :
     {
@@ -15,7 +15,6 @@
     },
     "uniforms" : 
     {
-        "color" : "vec3",
         "M" : "mat4"
     }
 }
