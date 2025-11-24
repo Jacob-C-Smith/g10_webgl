@@ -7,6 +7,7 @@ class Scene {
         // construct a scene
         this.name = "";
         this.entities = [ ] 
+        this.cameras = [ ] 
     }
 
     // load the scene from a JSON value
@@ -26,18 +27,39 @@ class Scene {
             let promises = []
             let results = null;
             
-            // load geometries
+            // load entities
             for (const path of value.entities) 
                 promises.push(
                     Entity.load(path)
                 );
 
-            // wait for all geometries to load
+            // wait for all entities to load
             results = await Promise.all(promises);
 
             // add the loaded entities to the list
             for (const g of results) 
                 scene.entities.push(g);
+        }
+
+        // load the cameras
+        {
+
+            // initialized data
+            let promises = []
+            let results = null;
+            
+            // load cameras
+            for (const path of value.cameras) 
+                promises.push(
+                    Camera.load(path)
+                );
+
+            // wait for all cameras to load
+            results = await Promise.all(promises);
+
+            // add the loaded cameras to the list
+            for (const g of results) 
+                scene.cameras.push(g);
         }
 
         // done

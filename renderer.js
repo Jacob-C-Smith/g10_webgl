@@ -4,6 +4,7 @@ class Renderer {
     {
         this.name = "";
         this.pipelines = { };
+        this.attachments = { };
         this.passes = [ ];
     }
 
@@ -35,6 +36,20 @@ class Renderer {
             }
         }
 
+        // construct attachments
+        {
+
+            // iterate through each attachment
+            for (let i = 0; i < value.attachments.length; i++) {
+
+                // initialized data
+                let attachment = await Attachment.fromJson(value.attachments[i]);
+
+                // add the attachment
+                renderer.attachments[attachment.name] = attachment;
+            }
+        }
+
         // construct render passes
         {
 
@@ -46,9 +61,6 @@ class Renderer {
 
                 // add the render pass
                 renderer.passes.push(render_pass);
-
-                // log the load
-                console.log(`loaded ${render_pass}`);
             }
         }
 
@@ -66,11 +78,15 @@ class Renderer {
         );
     }
 
+    // draw a frame
     draw(){
 
         // clear the viewport
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
+        gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
         // iterate through each render pass
         for (let i = 0; i < this.passes.length; i++) {
@@ -78,9 +94,8 @@ class Renderer {
             // initialized data
             let render_pass = this.passes[i];
 
+            // execute the render pass
             render_pass.draw(this);
-
-            console.log(render_pass);
         }
     }
 

@@ -3,7 +3,8 @@ class RenderPass {
     constructor ()
     {
         this.name = "";
-        this.pipelines = [ ]
+        this.attachments = [ ];
+        this.pipelines = [ ];
     }
 
     // load the render pass from a JSON value
@@ -15,6 +16,9 @@ class RenderPass {
 
         // construct the render pass
         renderPass.name = value.name;
+
+        // arrange the attachments
+        //
 
         // arrange the pipelines
         {
@@ -46,7 +50,7 @@ class RenderPass {
 
     draw (){
 
-        // iterate through each render pass
+        // iterate through each pipeline
         for (let i = 0; i < this.pipelines.length; i++) {
 
             // initialized data
@@ -65,8 +69,6 @@ class RenderPass {
                 // draw the drawable
                 g.draw();
             }
-
-            console.log(pipeline)
         }
     }
 

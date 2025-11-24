@@ -16,9 +16,6 @@ class Camera {
 
         // construct the camera
         camera.name = value.name;
-        camera.transform = await Transform.fromJson(value.transform);
-        camera.geometry = await Geometry.fromJson(value.geometry);
-        camera.color = value.color;
 
         // done
         return camera;

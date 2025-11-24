@@ -92,31 +92,54 @@ class Pipeline {
 
     add(d)
     {
+
+        // add draw item d to the draw list
         this.drawList.push(d);
     }
 
     bindOnce()
     {
+
+        // bind this shader
         this.shader.use();
+
+        // set vertex attributes
+        for (const [k, v] of Object.entries(this.vertexAttributes)) {
+
+            // enable the attribute
+            gl.enableVertexAttribArray(v);
+        }
+
+        // double dispatch
         this.bindOnceFunc(this);
     }
 
     setBindOnce(bindOnce){
+
+        // set the bind once function
         this.bindOnceFunc = bindOnce;
     }
 
     bindEach(g)
     {
+
+        // double dispatch each function
         this.bindEachFunc(this, g)
+
+        // bind the draw object
         g.bind(this)
     }
 
     setBindEach(bindEach){
+
+        // set the bind each function
         this.bindEachFunc = bindEach;
     }
 
     str()
     {
+
+        // done 
         return `
         {
             name         : ${this.name},

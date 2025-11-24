@@ -20,10 +20,6 @@ class Instance {
     static async fromJson(value)
     {
         
-        
-        // store the singleton
-        this.singleton = instance;
-
         // store the name
         this.name = value.name;
 
@@ -49,7 +45,7 @@ class Instance {
 
     // get the active instance
     static active () {
-        return this.singleton;
+        return Instance;
     }
 
     // get a pipeline from the cache

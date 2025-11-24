@@ -1,5 +1,7 @@
-let eye = [ -2, 0, 0 ];
+let eye = [ -0.5, 0, 0.00 ];
 let degre = 0;
+
+let tex = null;
 
 let instance = null;
 
@@ -13,11 +15,12 @@ function init ( )
 
     // initialized data
     let canvas = document.getElementById('hellowebgl');
-    
+
     // get a gl context
     try 
     {
-        gl = canvas.getContext("webgl") || 
+        gl = canvas.getContext("webgl2", { alpha: true }) ||
+             canvas.getContext("webgl") || 
              canvas.getContext("experimental-webgl");
     }
     catch (e)
@@ -58,42 +61,73 @@ async function programShaders ( )
     // initialized data
     let colorEntityPipeline = Instance.getPipeline("color entity");
     let depthEntityPipeline = Instance.getPipeline("depth entity");
+    let textureEntityPipeline = Instance.getPipeline("texture entity");
 
     // set bind once
     colorEntityPipeline.setBindOnce((pipeline) => {
+
+        // initialized data
+        let p = mat4.create();
+        let v = mat4.create();
+
+        // compute P
+        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
+        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
         
-        // enable the vertex buffer
-        gl.enableVertexAttribArray(0);  
-
-        {
-            let p = mat4.create();
-            let v = mat4.create();
-
-            mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
-            mat4.lookAt(eye, [0,0,0], [0,0,1], v)
-            
-            eye[2] = Math.sin(degre);
-            degre += 0.02;
-
-            gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
-            gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
-        }
+        // compute V
+        mat4.lookAt(eye, eye, [0,0,1], v)
+        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
     })
 
     // set bind each
     colorEntityPipeline.setBindEach((pipeline, drawable) => {
+
+        // bind the entity
+        drawable.bind(pipeline)
+
+        // bind the color
+        gl.uniform3f(pipeline.uniforms.color, ...drawable.color);
+
+        // set the transform
         drawable.transform.rotation[0] += 0.01;
     })
 
     // set bind once
-    depthEntityPipeline.setBindOnce((pipeline) => {
+    depthEntityPipeline.setBindOnce((pipeline) => { })
 
-        // enable the vertex buffer
-        gl.enableVertexAttribArray(0);
+    // set bind each
+    depthEntityPipeline.setBindEach((pipeline, drawable) => { })
+
+    // set bind once
+    textureEntityPipeline.setBindOnce((pipeline) => {
+
+        // initialized data
+        let p = mat4.create();
+        let v = mat4.create();
+
+        // in 0 -> xyz
+        // in 1 -> uv
+        gl.enableVertexAttribArray(0);  
+        gl.enableVertexAttribArray(1);  
+
+        // compute P
+        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
+        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
+
+        // compute V
+        mat4.lookAt(eye, eye, [0,0,1], v)
+        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
     })
 
     // set bind each
-    depthEntityPipeline.setBindEach((pipeline, drawable) => {})
+    textureEntityPipeline.setBindEach((pipeline, drawable) => {
+        
+        // bind the entity
+        drawable.bind(pipeline)
+
+        // bind the texture
+        drawable.texture.bind(pipeline)
+    })
 
     // done
     return;
@@ -109,7 +143,7 @@ async function main()
     init(); 
 
     // load the instance
-    instance = await Instance.load("static/assets/instance.json")
+    instance = await Instance.load("static/assets/instance.json");
 
     // program the shaders
     await programShaders();

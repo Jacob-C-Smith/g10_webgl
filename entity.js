@@ -15,12 +15,23 @@ class Entity {
         let entity = new Entity();
         let pipeline = null;
 
-        // construct the entity
+        // store the name
         entity.name = value.name;
+
+        // store the transform
         entity.transform = await Transform.fromJson(value.transform);
+
+        // store the geometry
         entity.geometry = await Geometry.fromJson(value.geometry);
-        entity.color = value.color;
-        
+
+        // store the color
+        if ( value.color != undefined ) 
+            entity.color = value.color;
+
+        // store the texture
+        if ( value.texture != undefined ) 
+            entity.texture = await Texture.load(value.texture);
+
         // store the pipeline
         pipeline = Instance.getPipeline(value.pipeline)
 
@@ -48,9 +59,6 @@ class Entity {
         // bind the transform
         this.transform.bind(pipeline);
         
-        // bind the color
-        gl.uniform3f(pipeline.uniforms.color, ...this.color);
-
         // bind the geometry
         this.geometry.bind(pipeline);
     }
