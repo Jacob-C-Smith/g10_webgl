@@ -97,14 +97,22 @@ class Pipeline {
 
     bindOnce()
     {
-        this.shader.use()
-        this.bindOnceFunc(this)
+        this.shader.use();
+        this.bindOnceFunc(this);
+    }
+
+    setBindOnce(bindOnce){
+        this.bindOnceFunc = bindOnce;
     }
 
     bindEach(g)
     {
         this.bindEachFunc(this, g)
         g.bind(this)
+    }
+
+    setBindEach(bindEach){
+        this.bindEachFunc = bindEach;
     }
 
     str()

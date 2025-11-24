@@ -37,6 +37,9 @@ class Geometry extends Drawable {
             geometry.vert = value.vert
         }
 
+        // cache the geometry
+        Instance.setGeometry(geometry.name, geometry);
+        
         // done
         return geometry;
     }

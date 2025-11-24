@@ -31,7 +31,7 @@ class Shader {
             // attach the binaries
             gl.attachShader(
                 shader.prog, 
-                compileShader(
+                this.compileShader(
                     gl, 
                     shader.vertSource, 
                     gl.VERTEX_SHADER
@@ -39,7 +39,7 @@ class Shader {
             );
             gl.attachShader(
                 shader.prog, 
-                compileShader(
+                this.compileShader(
                     gl, 
                     shader.fragSource, 
                     gl.FRAGMENT_SHADER
@@ -64,6 +64,17 @@ class Shader {
         return await Shader.fromJson(
             await fetchJson(uri)
         );
+    }
+
+    static compileShader(gl, source, type) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert(gl.getShaderInfoLog(shader));
+            return null;
+        }
+        return shader;
     }
 
     use()

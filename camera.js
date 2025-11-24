@@ -1,4 +1,4 @@
-class Entity {
+class Camera {
 
     constructor ()
     {
@@ -12,36 +12,29 @@ class Entity {
     {
         
         // initialized data
-        let entity = new Entity();
-        let pipeline = null;
+        let camera = new Camera();
 
-        // construct the entity
-        entity.name = value.name;
-        entity.transform = await Transform.fromJson(value.transform);
-        entity.geometry = await Geometry.fromJson(value.geometry);
-        entity.color = value.color;
-        
-        // store the pipeline
-        pipeline = Instance.getPipeline(value.pipeline)
+        // construct the camera
+        camera.name = value.name;
+        camera.transform = await Transform.fromJson(value.transform);
+        camera.geometry = await Geometry.fromJson(value.geometry);
+        camera.color = value.color;
 
-        // add the entity to the pipeline's draw list
-        pipeline.add(entity);
-        
         // done
-        return entity;
+        return camera;
     }
 
-    // load the entity from a JSON file
+    // load the camera from a JSON file
     static async load (uri)
     {
 
         // success
-        return await Entity.fromJson(
+        return await Camera.fromJson(
             await fetchJson(uri)
         );
     }
 
-    // bind the entity
+    // bind the camera
     bind (pipeline)
     {
 
@@ -55,15 +48,15 @@ class Entity {
         this.geometry.bind(pipeline);
     }
 
-    // draw the entity
+    // draw the camera
     draw ( )
     {
 
-        // draw the entity
+        // draw the camera
         this.geometry.draw();
     }
 
-    // create a textual representation of the entity
+    // create a textual representation of the camera
     str ( )
     {
         return `
