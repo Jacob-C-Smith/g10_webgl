@@ -168,9 +168,6 @@ async function programShaders ( )
 async function programRenderer ( )
 {
     let renderer = Instance.renderer;
-
-    
-
 }
 
 /** 
@@ -189,7 +186,7 @@ async function main()
     await programShaders();
 
     // game logic
-    
+    //
     
     // draw the scene
     draw();
@@ -200,6 +197,12 @@ function animate() {
     if (lastTime != 0) {
         let elapsed = timeNow - lastTime;
         totalTime += elapsed;
+
+        let e1 = Instance.scene.entities[2];
+        let lr = Instance.getBind("RUN RIGHT") - Instance.getBind("RUN LEFT");
+
+
+        e1.transform.location[0] += vel = elapsed/1000 * lr;
     }
     lastTime = timeNow;
 }

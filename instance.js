@@ -2,8 +2,9 @@ class Instance {
 
     // singleton
     static name = "";
-    static renderer = null
-    static scene = null
+    static renderer = null;
+    static scene = null;
+    static input = null;
     static cache = { 
         pipeline: { },
         attachment: { },
@@ -29,6 +30,9 @@ class Instance {
 
         // construct the scene
         this.scene = await Scene.load(value.scene);
+
+        // construct the input
+        this.input = await Input.load(value.input)
 
         // done
         return this;
@@ -119,6 +123,11 @@ class Instance {
 
         // store the attachment
         this.cache.attachment[name] = attachment;
+    }
+
+    static getBind ( name )
+    {
+        return Instance.input.binds[name].value;
     }
 
     // create a textual representation of the instance
