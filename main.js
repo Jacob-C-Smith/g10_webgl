@@ -70,20 +70,10 @@ async function programShaders ( )
     colorEntityPipeline.setBindOnce((pipeline) => {
 
         // initialized data
-        let p = mat4.create();
-        let v = mat4.create();
+        let camera = Instance.scene.activeCamera;
 
-        // input assembler
-        gl.enableVertexAttribArray(0);
-        gl.disableVertexAttribArray(1);
-
-        // compute P
-        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
-        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
-        
-        // compute V
-        mat4.lookAt(eye, eye, [0,0,1], v)
-        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+        // bind the camera
+        camera.bind(pipeline);
     })
 
     // set bind each
@@ -109,20 +99,10 @@ async function programShaders ( )
     uvEntityPipeline.setBindOnce((pipeline) => {
 
         // initialized data
-        let p = mat4.create();
-        let v = mat4.create();
+        let camera = Instance.scene.activeCamera;
 
-        // input assembler
-        gl.enableVertexAttribArray(0);
-        gl.enableVertexAttribArray(1);
-
-        // compute P
-        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
-        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
-
-        // compute V
-        mat4.lookAt(eye, eye, [0,0,1], v)
-        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+        // bind the camera
+        camera.bind(pipeline);
     });
 
     // set bind each
@@ -136,20 +116,10 @@ async function programShaders ( )
     textureEntityPipeline.setBindOnce((pipeline) => {
 
         // initialized data
-        let p = mat4.create();
-        let v = mat4.create();
+        let camera = Instance.scene.activeCamera;
 
-        // input assembler
-        gl.enableVertexAttribArray(0);
-        gl.enableVertexAttribArray(1);
-
-        // compute P
-        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
-        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
-
-        // compute V
-        mat4.lookAt(eye, eye, [0,0,1], v)
-        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+        // bind the camera
+        camera.bind(pipeline);
     });
 
     // set bind each
@@ -166,20 +136,10 @@ async function programShaders ( )
     tilemapEntityPipeline.setBindOnce((pipeline) => {
 
         // initialized data
-        let p = mat4.create();
-        let v = mat4.create();
+        let camera = Instance.scene.activeCamera;
 
-        // input assembler
-        gl.enableVertexAttribArray(0);
-        gl.enableVertexAttribArray(1);
-
-        // compute P
-        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
-        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
-
-        // compute V
-        mat4.lookAt(eye, eye, [0,0,1], v)
-        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+        // bind the camera
+        camera.bind(pipeline);
     });
 
     // set bind each

@@ -6,8 +6,9 @@ class Scene {
 
         // construct a scene
         this.name = "";
-        this.entities = [ ] 
-        this.cameras = [ ] 
+        this.entities = [ ];
+        this.activeCamera = null;
+        this.cameras = [ ];
     }
 
     // load the scene from a JSON value
@@ -61,6 +62,9 @@ class Scene {
             for (const g of results) 
                 scene.cameras.push(g);
         }
+
+        // set the active camera
+        scene.activeCamera = scene.cameras[0];
 
         // done
         return scene;
