@@ -6,6 +6,7 @@ class Instance {
     static scene = null
     static cache = { 
         pipeline: { },
+        attachment: { },
         geometry: { }
     }
 
@@ -94,6 +95,30 @@ class Instance {
 
         // store the geometry
         this.cache.geometry[name] = geometry;
+    }
+    
+    // get attachment from the cache
+    static getAttachment ( name ) {
+        return this.cache.attachment[name];
+    }
+
+    // set attachment in the cache
+    static setAttachment ( name, attachment ) {
+
+        // error check
+        if ( name == null ) {
+
+            // error 
+            console.error("[instance] Can not cache unnamed attachment");
+        }
+        if ( attachment == null ) {
+
+            // error 
+            console.error("[instance] Can not cache null attachment");
+        }
+
+        // store the attachment
+        this.cache.attachment[name] = attachment;
     }
 
     // create a textual representation of the instance

@@ -60,9 +60,12 @@ class Attachment {
             0
         );
 
-        // unbind
+        // bind
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
+        // cache the attachment
+        Instance.setAttachment(attachment.name, attachment);
+        
         // done
         return attachment;
     }

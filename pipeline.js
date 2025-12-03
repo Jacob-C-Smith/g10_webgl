@@ -46,10 +46,11 @@ class Pipeline {
                 let iVertexAttr = gl.getAttribLocation(prog, k);
 
                 // enable the vertex attribute
-                gl.enableVertexAttribArray(iVertexAttr);
+                if ( iVertexAttr !== -1 ) gl.enableVertexAttribArray(iVertexAttr);
 
                 // store the vertex attribute and its location
-                pipeline.vertexAttributes[k] = iVertexAttr;
+                v.location = iVertexAttr;
+                pipeline.vertexAttributes[k] = v;
             }
         }
 
@@ -107,7 +108,7 @@ class Pipeline {
         for (const [k, v] of Object.entries(this.vertexAttributes)) {
 
             // enable the attribute
-            gl.enableVertexAttribArray(v);
+            if ( v.location !== -1 ) gl.enableVertexAttribArray(v.location);
         }
 
         // double dispatch

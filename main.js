@@ -1,7 +1,8 @@
 let eye = [ -0.5, 0, 0.00 ];
 let degre = 0;
-
-let tex = null;
+let idx = 0;
+let lastTime = 0;
+let totalTime = 0;
 
 let instance = null;
 
@@ -61,14 +62,20 @@ async function programShaders ( )
     // initialized data
     let colorEntityPipeline = Instance.getPipeline("color entity");
     let depthEntityPipeline = Instance.getPipeline("depth entity");
+    let uvEntityPipeline = Instance.getPipeline("uv entity");
     let textureEntityPipeline = Instance.getPipeline("texture entity");
-
+    let tilemapEntityPipeline = Instance.getPipeline("tilemap entity");
+    
     // set bind once
     colorEntityPipeline.setBindOnce((pipeline) => {
 
         // initialized data
         let p = mat4.create();
         let v = mat4.create();
+
+        // input assembler
+        gl.enableVertexAttribArray(0);
+        gl.disableVertexAttribArray(1);
 
         // compute P
         mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
@@ -99,16 +106,15 @@ async function programShaders ( )
     depthEntityPipeline.setBindEach((pipeline, drawable) => { })
 
     // set bind once
-    textureEntityPipeline.setBindOnce((pipeline) => {
+    uvEntityPipeline.setBindOnce((pipeline) => {
 
         // initialized data
         let p = mat4.create();
         let v = mat4.create();
 
-        // in 0 -> xyz
-        // in 1 -> uv
-        gl.enableVertexAttribArray(0);  
-        gl.enableVertexAttribArray(1);  
+        // input assembler
+        gl.enableVertexAttribArray(0);
+        gl.enableVertexAttribArray(1);
 
         // compute P
         mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
@@ -117,7 +123,34 @@ async function programShaders ( )
         // compute V
         mat4.lookAt(eye, eye, [0,0,1], v)
         gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
-    })
+    });
+
+    // set bind each
+    uvEntityPipeline.setBindEach((pipeline, drawable) => {
+        
+        // bind the entity
+        drawable.bind(pipeline)
+    });
+
+    // set bind once
+    textureEntityPipeline.setBindOnce((pipeline) => {
+
+        // initialized data
+        let p = mat4.create();
+        let v = mat4.create();
+
+        // input assembler
+        gl.enableVertexAttribArray(0);
+        gl.enableVertexAttribArray(1);
+
+        // compute P
+        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
+        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
+
+        // compute V
+        mat4.lookAt(eye, eye, [0,0,1], v)
+        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+    });
 
     // set bind each
     textureEntityPipeline.setBindEach((pipeline, drawable) => {
@@ -126,11 +159,58 @@ async function programShaders ( )
         drawable.bind(pipeline)
 
         // bind the texture
-        drawable.texture.bind(pipeline)
-    })
+        drawable.texture.bind(pipeline, 'sampler')
+    });
+
+    // set bind once
+    tilemapEntityPipeline.setBindOnce((pipeline) => {
+
+        // initialized data
+        let p = mat4.create();
+        let v = mat4.create();
+
+        // input assembler
+        gl.enableVertexAttribArray(0);
+        gl.enableVertexAttribArray(1);
+
+        // compute P
+        mat4.perspective(90, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, p);
+        gl.uniformMatrix4fv(pipeline.uniforms.P, false, p);
+
+        // compute V
+        mat4.lookAt(eye, eye, [0,0,1], v)
+        gl.uniformMatrix4fv(pipeline.uniforms.V, false, v);
+    });
+
+    // set bind each
+    tilemapEntityPipeline.setBindEach((pipeline, drawable) => {
+        
+        // bind the entity
+        drawable.bind(pipeline)
+
+        // width
+        gl.uniform1i(pipeline.uniforms.width, 8);
+
+        // height
+        gl.uniform1i(pipeline.uniforms.height, 16);
+
+        // index
+        gl.uniform1i(pipeline.uniforms.index, 4+(totalTime/125)%4);
+
+        // bind the texture
+        drawable.texture.bind(pipeline, 'sampler')
+    });
 
     // done
     return;
+}
+
+async function programRenderer ( )
+{
+    let renderer = Instance.renderer;
+
+    
+
 }
 
 /** 
@@ -147,17 +227,32 @@ async function main()
 
     // program the shaders
     await programShaders();
+
+    // game logic
+    
     
     // draw the scene
-    requestAnimationFrame(draw);
+    draw();
+}
+
+function animate() {
+    let timeNow = new Date().getTime();
+    if (lastTime != 0) {
+        let elapsed = timeNow - lastTime;
+        totalTime += elapsed;
+    }
+    lastTime = timeNow;
 }
 
 function draw (t)
 {
 
+    // next frame
+    requestAnimationFrame(draw);
+
     // draw the scene
     instance.renderer.draw();
 
-    // next frame
-    requestAnimationFrame(draw);
+    // animate
+    animate();
 }

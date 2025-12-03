@@ -85,11 +85,12 @@ class Texture extends Uniform {
     }
 
     // bind the texture
-    bind (pipeline)
+    bind (pipeline, name)
     {
 
         // initialized data
         let texture_unit = Texture.get(this.name);
+        let sampler = gl.getUniformLocation(pipeline.shader.prog, name);
 
         if ( texture_unit === undefined ) {
             for ( let i = 0; i < Texture.texture_unit_quantity; i++ )
@@ -107,14 +108,11 @@ class Texture extends Uniform {
                     gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
                     // bind the uniform
-                    gl.uniform1i(pipeline.uniforms.texture, i);
+                    gl.uniform1i(sampler, i);
 
                     // cache the texture
                     Texture.set(this.name, i);
                     
-                    // debug
-                    console.log(`Texture: BN '${this.name}' -> unit ${i}`);
-
                     // done
                     return;
                 }
@@ -128,10 +126,7 @@ class Texture extends Uniform {
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
         // bind the uniform
-        gl.uniform1i(pipeline.uniforms.texture, texture_unit);
-
-        // debug
-        console.log(`Texture: NC '${this.name}' -> unit ${texture_unit}`);
+        gl.uniform1i(sampler, texture_unit);
     }
 
     static get(key) {

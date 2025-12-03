@@ -3,7 +3,7 @@ class RenderPass {
     constructor ()
     {
         this.name = "";
-        this.attachments = [ ];
+        this.attachment = "";
         this.pipelines = [ ];
     }
 
@@ -17,8 +17,8 @@ class RenderPass {
         // construct the render pass
         renderPass.name = value.name;
 
-        // arrange the attachments
-        //
+        // set the attachment
+        renderPass.attachment = value.attachment;
 
         // arrange the pipelines
         {
@@ -58,6 +58,11 @@ class RenderPass {
 
             // bind the pipeline
             pipeline.bindOnce();
+
+            // // get the attachment
+            // let a = Instance.getAttachment(this.attachment);
+
+            // a.bind()
 
             // draw each item in the pipeline
             for (let g of pipeline.drawList)

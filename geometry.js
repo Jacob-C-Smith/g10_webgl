@@ -58,7 +58,7 @@ class Geometry extends Drawable {
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(value.uv), gl.STATIC_DRAW);
 
             // options
-            geometry.uv_buffer.itemSize = 3;
+            geometry.uv_buffer.itemSize = 2;
             geometry.uv_buffer.numItems = value.uv.length / geometry.uv_buffer.itemSize;
 
             // store the vertices in the result
@@ -124,20 +124,37 @@ class Geometry extends Drawable {
     // bind the geometry
     bind (pipeline)
     {
-
-        // bind the vertex buffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.xyz_buffer);
-
         // bind each vertex attribute
         for (const [k, v] of Object.entries(pipeline.vertexAttributes)) {
-            gl.vertexAttribPointer(v, this.xyz_buffer.itemSize, gl.FLOAT, false, 0, 0);
+            
+            // skip unbound attributes
+            if ( v.location === -1 ) continue;
+
+            // select a buffer
+            let buffer = null;
+            if (k.includes("xyz") || k.includes("Position")) {
+                 buffer = this.xyz_buffer;
+            } else if (k.includes("uv") || k.includes("Coord")) {
+                 buffer = this.uv_buffer;
+            }
+            
+            if (buffer) {
+                // bind the vertex buffer
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+                // bind the attribute
+                gl.vertexAttribPointer(v.location, buffer.itemSize, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(v.location);
+            } else {
+                gl.disableVertexAttribArray(v.location);
+            }
         }
     }
 
     // draw the geometry
     draw ( )
     {
-
+                
         // draw the geometry
         gl.drawArrays(gl.TRIANGLES, 0, this.xyz_buffer.numItems);
     }
