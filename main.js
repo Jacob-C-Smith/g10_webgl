@@ -1,4 +1,4 @@
-let eye = [ -0.5, 0, 0.00 ];
+let eye = [-0.5, 0, 0.00];
 let degre = 0;
 let idx = 0;
 let lastTime = 0;
@@ -11,53 +11,47 @@ gl = null;
 /**
  * Early initialization
  */
-function init ( ) 
-{
+function init() {
 
     // initialized data
     let canvas = document.getElementById('hellowebgl');
 
     // get a gl context
-    try 
-    {
-        gl = canvas.getContext("webgl2", { alpha: true }) ||
-             canvas.getContext("webgl") || 
-             canvas.getContext("experimental-webgl");
-    }
-    catch (e)
-    {
+    try {
+        gl = canvas.getContext("webgl2", {alpha: true}) ||
+            canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
+    } catch (e) {
         console.error("Error initializing WebGL:", e);
     }
 
     // error check
-    if (!gl) 
-    {
+    if (!gl) {
         alert("Unable to initialize WebGL. Your browser may not support it.");
         gl = null;
     }
 
     // set the viewport
     gl.viewportWidth = canvas.width,
-    gl.viewportHeight = canvas.height;
+        gl.viewportHeight = canvas.height;
 
     // set the backface cull
     gl.polygonCull = true,
-    gl.polygonCullFace = gl.FRONT_AND_BACK;
+        gl.polygonCullFace = gl.FRONT_AND_BACK;
 
     // clear the color attachment with black
-    gl.framebufferClearColor = [ 0.0, 0.0, 0.0, 1.0 ];
+    gl.framebufferClearColor = [0.0, 0.0, 0.0, 1.0];
     gl.clearColor(...gl.framebufferClearColor);
 
     // viewport
-    canvas.width  = window.innerWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     gl.viewport(0, 0, canvas.width, canvas.height);
-    
+
     // done
 }
 
-async function programShaders ( )
-{
+async function programShaders() {
 
     // initialized data
     let colorEntityPipeline = Instance.getPipeline("color entity");
@@ -65,7 +59,7 @@ async function programShaders ( )
     let uvEntityPipeline = Instance.getPipeline("uv entity");
     let textureEntityPipeline = Instance.getPipeline("texture entity");
     let tilemapEntityPipeline = Instance.getPipeline("tilemap entity");
-    
+
     // set bind once
     colorEntityPipeline.setBindOnce((pipeline) => {
 
@@ -90,10 +84,12 @@ async function programShaders ( )
     })
 
     // set bind once
-    depthEntityPipeline.setBindOnce((pipeline) => { })
+    depthEntityPipeline.setBindOnce((pipeline) => {
+    })
 
     // set bind each
-    depthEntityPipeline.setBindEach((pipeline, drawable) => { })
+    depthEntityPipeline.setBindEach((pipeline, drawable) => {
+    })
 
     // set bind once
     uvEntityPipeline.setBindOnce((pipeline) => {
@@ -107,7 +103,7 @@ async function programShaders ( )
 
     // set bind each
     uvEntityPipeline.setBindEach((pipeline, drawable) => {
-        
+
         // bind the entity
         drawable.bind(pipeline)
     });
@@ -124,7 +120,7 @@ async function programShaders ( )
 
     // set bind each
     textureEntityPipeline.setBindEach((pipeline, drawable) => {
-        
+
         // bind the entity
         drawable.bind(pipeline)
 
@@ -144,7 +140,7 @@ async function programShaders ( )
 
     // set bind each
     tilemapEntityPipeline.setBindEach((pipeline, drawable) => {
-        
+
         // bind the entity
         drawable.bind(pipeline)
 
@@ -155,7 +151,7 @@ async function programShaders ( )
         gl.uniform1i(pipeline.uniforms.height, 16);
 
         // index
-        gl.uniform1i(pipeline.uniforms.index, 4+(totalTime/125)%4);
+        gl.uniform1i(pipeline.uniforms.index, 4 + (totalTime / 125) % 4);
 
         // bind the texture
         drawable.texture.bind(pipeline, 'sampler')
@@ -165,19 +161,17 @@ async function programShaders ( )
     return;
 }
 
-async function programRenderer ( )
-{
+async function programRenderer() {
     let renderer = Instance.renderer;
 }
 
-/** 
+/**
  * Entry point
  */
-async function main()
-{
+async function main() {
 
     // initialize
-    init(); 
+    init();
 
     // load the instance
     instance = await Instance.load("static/assets/instance.json");
@@ -185,9 +179,15 @@ async function main()
     // program the shaders
     await programShaders();
 
+
     // game logic
     //
-    
+    Instance.actions = [];
+    let player = new PlayerCharacter(Instance.scene.entities[2]);
+    GameWorld.addEntity(player);
+    GameWorld.player = player;
+    GameWorld.boundingBoxes.push(new AABB(new Vector3(-10000, -100, 0), new Vector3(10000, -1, 0)));
+
     // draw the scene
     draw();
 }
@@ -198,17 +198,38 @@ function animate() {
         let elapsed = timeNow - lastTime;
         totalTime += elapsed;
 
-        let e1 = Instance.scene.entities[2];
-        let lr = Instance.getBind("RUN RIGHT") - Instance.getBind("RUN LEFT");
+        // let e1 = Instance.scene.entities[2];
+        // let lr = Instance.getBind("RUN RIGHT") - Instance.getBind("RUN LEFT");
+        for (let action of Instance.actions) {
+            if (action(elapsed / 1000)) {
+                //remove
+            }
+        }
 
+        let camera = Instance.scene.activeCamera;
+        camera.location[2] = 10;
+        camera.location[0] = lerp(camera.location[0], GameWorld.player.position.x, 0.1);
+        camera.location[1] = lerp(camera.location[1], GameWorld.player.position.y, 0.1);
+        camera.target[0] = lerp(camera.target[0], GameWorld.player.position.x, 0.1);
+        camera.target[1] = lerp(camera.target[1], GameWorld.player.position.y, 0.1);
 
-        e1.transform.location[0] += vel = elapsed/1000 * lr;
+        if (Instance.input.binds["A ATTACK"].value > 0) {
+            let boost = new SpeedBoost(10, 300, 3000, 20)
+            boost.attachTo(GameWorld.player);
+            console.log("Fired!");
+        }
+
+        GameWorld.gameTick(elapsed / 1000);
+
+        console.log(GameWorld.player.position);
+        console.log("Active State: " + GameWorld.player.controller.activeState.name);
+
+        // e1.transform.location[0] += vel = elapsed/1000 * lr;
     }
     lastTime = timeNow;
 }
 
-function draw (t)
-{
+function draw(t) {
 
     // next frame
     requestAnimationFrame(draw);
@@ -218,4 +239,8 @@ function draw (t)
 
     // animate
     animate();
+}
+
+function lerp(a, b, t) {
+    return a + (b - a) * t;
 }
